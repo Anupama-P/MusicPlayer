@@ -1,3 +1,170 @@
+@mixin loop-shuffle {
+  float: right;
+  position: absolute;
+  margin-top: -46px;
+  font-size: 24px;
+  @media screen and (max-width: 769px) {
+    margin-top: -26px;
+    font-size: 18px;
+  }
+}
+
+$width-full: 100%;
+
+html {
+  height: $width-full;
+  width: $width-full;
+}
+
+#app {
+  margin-top: 4%;
+  @media screen and (max-width: 769px) {
+    margin-top: 12%;
+  }
+}
+
+.outerdiv {
+  margin-top: 30px;
+  width: 550px;
+  height: 580px;
+  margin: auto;
+  border-radius: 43px;
+  position: relative;
+  box-shadow: 10px 10px 5px #888888;
+  @media screen and (max-width: 769px) {
+    width: 300px;
+    height: 330px;
+  }
+}
+
+.imagediv {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: $width-full;
+  height: 70%;
+  border-radius: 43px 43px 0 0;
+}
+
 .title {
-	color: red;
+  z-index: 100;
+  position: absolute;
+  color: white;
+  font-size: 42px;
+  font-weight: bold;
+  left: 59px;
+  top: 231px;
+  width: 210px;
+  @media screen and (max-width: 769px) {
+    font-size: 28px;
+    font-weight: bold;
+    left: 29px;
+    top: 113px;
+    width: 190px;
+  }
+}
+
+.controldiv {
+  position: absolute;
+  bottom: 44px;
+  width: $width-full;
+  .seekbar {
+    width: $width-full;
+  } 
+  @media screen and (max-width: 769px) {
+    bottom: 26px;
+  }
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  margin: 10px 0;
+  width: $width-full;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 5px;
+  cursor: pointer;
+  box-shadow: 0px 0px 0px #000000;
+  background: #2497E3;
+  border-radius: 1px;
+  border: 0px solid #000000;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 0px 0px 0px #000000;
+  border: 1px solid #2497E3;
+  height: 18px;
+  width: 18px;
+  border-radius: 25px;
+  background: #A1D0FF;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -7px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #2497E3;
+}
+
+.othercontrols {
+  margin-top: 50px;
+  text-align: center;
+  @media screen and (max-width: 769px) {
+    margin-top: 30px;
+  }
+}
+
+button {
+  margin: 0 20px 0 20px;
+  font-size: 32px;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  &:focus {
+    outline: none;
+  }
+  @media screen and (max-width: 769px) {
+    margin: 0 2px 0 2px;
+    font-size: 18px;
+  }
+}
+
+.play-pause-button {
+  border: solid grey;
+  border-radius: 33px;
+  width: 65px;
+  height: 65px;
+  @media screen and (max-width: 769px) {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.shuffle-button {
+  @include loop-shuffle;
+  right: 40px;
+  @media screen and (max-width: 769px) {
+    right: 28px;
+  }
+}
+
+.loop-button {
+  @include loop-shuffle;
+  right: 90px;
+  @media screen and (max-width: 769px) {
+    right: 60px;
+  }
+}
+.durationinnerdiv {
+  display: inline-block;
+  float: right;
+  padding-right: 70px;
+}
+
+.currenttimediv {
+  display: inline-block;
+  float: left;
+  padding-left: 70px;
 }

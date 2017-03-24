@@ -5,6 +5,7 @@ import { createHistory } from 'history';
 import { Router, useRouterHistory } from 'react-router';
 
 import routes from 'routes';
+import '../sass/music.scss';
 
 const root = document.getElementById('app');
 const history = useRouterHistory(createHistory)({ basename: process.env.PUBLIC_PATH });

@@ -4,36 +4,7 @@ import DoublyList from './doublylist';
 import Title from './Title';
 import MusicImage from './Image';
 import Control from './Control';
-import img from './images/rain.jpg';
-import walk from './images/walk.jpg';
-
-const songlist = [
-  {
-    title: 'First Song',
-    image: img,
-    audio_url: 'http://www.schillmania.com/projects/soundmanager2/demo/_mp3/rain.mp3'
-  },
-  {
-    title: 'Second Song',
-    image: walk,
-    audio_url: 'http://www.schillmania.com/projects/soundmanager2/demo/_mp3/walking.mp3'
-  },
-  {
-    title: 'Third Song',
-    image: 'image3',
-    audio_url: 'http://www.freshly-ground.com/misc/music/carl-3-barlp.mp3'
-  },
-  {
-    title: 'Fourth Song',
-    image: 'image4',
-    audio_url: 'http://www.freshly-ground.com/data/audio/binaural/Mak.mp3'
-  },
-  {
-    title: 'Fifth Song',
-    image: 'image5',
-    audio_url: 'http://www.freshly-ground.com/data/audio/binaural/Things%20that%20open,%20close%20and%20roll.mp3'
-  }
-];
+import Songlist from './Mydata';
 
 const newlist = new DoublyList();
 
@@ -45,14 +16,19 @@ export default class MusicPlayer extends React.Component {
     progressvalue: 0,
     disableprev: 'disabled',
     disablenext: '',
-    disableshuffle: ''
+    disableshuffle: '',
+    shuffleicon: 'grey',
+    loopicon: 'grey',
+    currenttime: '',
+    duration: '',
+    loop: false
   }
 
   componentWillMount() {
-    songlist.map((data, i) => {
+    Songlist.map((data, i) => {
       newlist.add(data, i);
     });
-    if (songlist.length < 2) {
+    if (Songlist.length < 2) {
       this.setState({ disableprev: 'disabled', disablenext: 'disabled', disableshuffle: 'disabled' });
     }
     this.setState({ data: newlist.head });
@@ -60,9 +36,9 @@ export default class MusicPlayer extends React.Component {
 
   disablebutton = (value) => {
     if (value === newlist.tail) {
-      this.setState({ disablenext: 'disabled' });
+      this.setState({ disablenext: 'disabled', disableprev: '' });
     } else if (value === newlist.head) {
-      this.setState({ disableprev: 'disabled' });
+      this.setState({ disableprev: 'disabled', disablenext: '' });
     } else {
       this.setState({ disableprev: '', disablenext: '' });
     }
@@ -70,7 +46,7 @@ export default class MusicPlayer extends React.Component {
 
   nextnode = () => {
     if (!this.state.shuffle) {
-      this.setState({ data: this.state.data.next });
+      this.setState({ data: this.state.data.next, progressvalue: 0, play: true });
       this.disablebutton(this.state.data.next);
     } else {
       this.shuffleSong();
@@ -78,19 +54,19 @@ export default class MusicPlayer extends React.Component {
   }
 
   shuffleSong = () => {
-    const num = Math.floor(Math.random() * songlist.length) + 1;
+    const num = Math.floor(Math.random() * Songlist.length) + 1;
     const newdata = newlist.getNodeAt(num);
     if (this.state.data === newdata) {
       this.shuffleSong();
     } else {
-      this.setState({ data: newdata });
+      this.setState({ data: newdata, progressvalue: 0, play: true });
       this.disablebutton(newdata);
     }
   }
 
   previousnode = () => {
     if (!this.state.shuffle) {
-      this.setState({ data: this.state.data.previous });
+      this.setState({ data: this.state.data.previous, progressvalue: 0, play: true });
       this.disablebutton(this.state.data.previous);
     } else {
       this.shuffleSong();
@@ -110,9 +86,12 @@ export default class MusicPlayer extends React.Component {
 
   shuffle = () => {
     if (this.state.shuffle) {
-      this.setState({ shuffle: false });
+      this.setState({ shuffle: false, shuffleicon: 'grey' });
     } else {
-      this.setState({ shuffle: true });
+      this.setState({ shuffle: true, shuffleicon: 'lightskyblue' });
+      if (!this.state.play) {
+        this.shuffleSong();
+      }
     }
   }
 
@@ -120,29 +99,59 @@ export default class MusicPlayer extends React.Component {
     const mymusic = document.getElementById('mymusic');
     const currentTime = mymusic.currentTime;
     const duration = mymusic.duration;
-    this.setState({ progressvalue: ((currentTime * 100) / duration) });
+    const durminutes = Math.floor(duration / 60);
+    const durseconds = Math.floor(duration - (durminutes * 60));
+    const currminutes = Math.floor(currentTime / 60);
+    const currseconds = Math.floor(currentTime - (currminutes * 60));
+    this.setState({ progressvalue: ((currentTime * 100) / duration), currenttime: `${currminutes}:${currseconds}`, duration: `${durminutes}:${durseconds}` });
   }
 
   musicend = () => {
-    this.nextnode();
+    if (this.state.data.next) {
+      this.nextnode();
+    }
+  }
+
+  updatemusic = () => {
+    const music = document.getElementById('mymusic');
+    const seekBar = document.getElementById('seek-bar');
+    const time = music.duration * (seekBar.value / 100);
+    music.currentTime = time;
+  }
+
+  isloop = () => {
+    if (this.state.loop) {
+      this.setState({ loop: false, loopicon: 'grey' });
+    } else {
+      this.setState({ loop: true, loopicon: 'lightskyblue' });
+    }
   }
 
   render() {
     return (
       <div>
-        <Title title={this.state.data.data.title} />
-        <MusicImage image={this.state.data.data.image} />
-        <Control
-          onClicknext={this.nextnode}
-          onClickprevious={this.previousnode}
-          onClickplay={this.playpause}
-          onClickshuffle={this.shuffle}
-          progressvalue={this.state.progressvalue}
-          disablenext={this.state.disablenext}
-          disableprev={this.state.disableprev}
-          disableshuffle={this.state.disableshuffle}
-        />
-        <audio autoPlay id="mymusic" src={this.state.data.data.audio_url} onTimeUpdate={this.updatetime} onEnded={this.musicend} />
+        <div className="outerdiv">
+          <Title title={this.state.data.data.title} />
+          <MusicImage image={this.state.data.data.image} />
+          <Control
+            onClicknext={this.nextnode}
+            onClickprevious={this.previousnode}
+            onClickplay={this.playpause}
+            onClickshuffle={this.shuffle}
+            progressvalue={this.state.progressvalue}
+            disablenext={this.state.disablenext}
+            disableprev={this.state.disableprev}
+            disableshuffle={this.state.disableshuffle}
+            onchangeseek={this.updatemusic}
+            playicon={this.state.play ? 'fa fa-pause' : 'fa fa-play'}
+            shuffleicon={this.state.shuffleicon}
+            currenttime={this.state.currenttime}
+            duration={this.state.duration}
+            isloop={this.isloop}
+            loopicon={this.state.loopicon}
+          />
+          <audio autoPlay loop={this.state.loop ? 'loop' : ''} id="mymusic" src={this.state.data.data.audio_url} onTimeUpdate={this.updatetime} onEnded={this.musicend} />
+        </div>
       </div>
     );
   }
